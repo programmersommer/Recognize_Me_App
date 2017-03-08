@@ -29,6 +29,7 @@ namespace RecognizeMeApp
     {
         private SpeakerVerificationServiceClient _serviceClient;
         private string _subscriptionKey;
+        Guid _speakerId;
 
         DispatcherTimer _etimer;
         DispatcherTimer _vtimer;
@@ -52,7 +53,7 @@ namespace RecognizeMeApp
 
             _subscriptionKey = "put_your_subscription_key_here";
             _serviceClient = new SpeakerVerificationServiceClient(_subscriptionKey);
-          
+
         }
 
 
@@ -82,7 +83,7 @@ namespace RecognizeMeApp
                 CaptureMedia.RecordLimitationExceeded += MediaCaptureOnRecordLimitationExceeded;
                 CaptureMedia.Failed += MediaCaptureOnFailed;
                 await CaptureMedia.StartRecordToStreamAsync(encodingProfile, AudioStream);
-              
+
                 _etimer.Start();
 
             }
@@ -98,36 +99,36 @@ namespace RecognizeMeApp
         async Task finishEnrollment()
         {
 
-                Guid _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
+            _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
 
-                btnRecordEnroll.Content = "Start record enrollment";
-                btnRecordEnroll.IsEnabled = false;
-                await CaptureMedia.StopRecordAsync();
+            btnRecordEnroll.Content = "Start record enrollment";
+            btnRecordEnroll.IsEnabled = false;
+            await CaptureMedia.StopRecordAsync();
 
-                Stream str = AudioStream.AsStream();
-                str.Seek(0, SeekOrigin.Begin);
+            Stream str = AudioStream.AsStream();
+            str.Seek(0, SeekOrigin.Begin);
 
-                Enrollment response;
+            Enrollment response;
 
-                try
-                {
-                    response = await _serviceClient.EnrollAsync(str, _speakerId);
-                }
-                catch (EnrollmentException ex)
-                {
-                    txtInfo.Text = ex.Message;
-                    CaptureMedia = null;
-                    btnVerify.IsEnabled = true;
-                    btnRecordEnroll.IsEnabled = true;
-                    return;
-                }
-
-                txtInfo.Text = "Remaining enrollments: " + txtInfo.Text + response.RemainingEnrollments.ToString();
-                txtInfo.Text = txtInfo.Text + Environment.NewLine + response.Phrase;
-
+            try
+            {
+                response = await _serviceClient.EnrollAsync(str, _speakerId);
+            }
+            catch (EnrollmentException ex)
+            {
+                txtInfo.Text = ex.Message;
                 CaptureMedia = null;
                 btnVerify.IsEnabled = true;
                 btnRecordEnroll.IsEnabled = true;
+                return;
+            }
+
+            txtInfo.Text = "Remaining enrollments: " + txtInfo.Text + response.RemainingEnrollments.ToString();
+            txtInfo.Text = txtInfo.Text + Environment.NewLine + response.Phrase;
+
+            CaptureMedia = null;
+            btnVerify.IsEnabled = true;
+            btnRecordEnroll.IsEnabled = true;
 
         }
 
@@ -135,7 +136,7 @@ namespace RecognizeMeApp
         private async void EnrollmentTime_Over(object sender, object e)
         {
             _etimer.Stop();
-             await finishEnrollment();
+            await finishEnrollment();
         }
 
         private async void VerificationTime_Over(object sender, object e)
@@ -194,7 +195,7 @@ namespace RecognizeMeApp
 
         async Task finishVerification()
         {
-            Guid _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
+            _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
 
             btnVerify.Content = "Start voice verification";
             btnVerify.IsEnabled = false;
@@ -254,8 +255,8 @@ namespace RecognizeMeApp
             }
             catch { }
         }
-		
-		private async void btnGetPhrases_Click(object sender, RoutedEventArgs e)
+
+        private async void btnGetPhrases_Click(object sender, RoutedEventArgs e)
         {
             await GetPhrases();
         }
@@ -288,7 +289,7 @@ namespace RecognizeMeApp
                 return;
             }
 
-            Guid _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
+            _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
 
             try
             {
@@ -321,7 +322,7 @@ namespace RecognizeMeApp
                 return;
             }
 
-            Guid _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
+            _speakerId = Guid.Parse((lbProfiles.SelectedItem as ListBoxItem).Content.ToString());
 
             try
             {
