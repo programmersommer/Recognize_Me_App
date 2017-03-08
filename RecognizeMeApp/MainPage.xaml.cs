@@ -117,19 +117,14 @@ namespace RecognizeMeApp
             catch (EnrollmentException ex)
             {
                 txtInfo.Text = ex.Message;
-                CaptureMedia = null;
-                btnVerify.IsEnabled = true;
-                btnRecordEnroll.IsEnabled = true;
+                CleanAfter();
                 return;
             }
 
             txtInfo.Text = "Remaining enrollments: " + txtInfo.Text + response.RemainingEnrollments.ToString();
             txtInfo.Text = txtInfo.Text + Environment.NewLine + response.Phrase;
 
-            CaptureMedia = null;
-            btnVerify.IsEnabled = true;
-            btnRecordEnroll.IsEnabled = true;
-
+            CleanAfter();
         }
 
 
@@ -147,12 +142,14 @@ namespace RecognizeMeApp
 
         private void MediaCaptureOnRecordLimitationExceeded(MediaCapture sender)
         {
-            throw new NotImplementedException();
+            txtInfo.Text = "Record limitation exceeded";
+            CleanAfter();
         }
 
         private void MediaCaptureOnFailed(MediaCapture sender, MediaCaptureFailedEventArgs errorEventArgs)
         {
-            throw new NotImplementedException();
+            txtInfo.Text = errorEventArgs.Message;
+            CleanAfter();
         }
 
         private async void btnVerify_Click(object sender, RoutedEventArgs e)
@@ -213,9 +210,7 @@ namespace RecognizeMeApp
             catch (VerificationException vx)
             {
                 txtInfo.Text = vx.Message;
-                CaptureMedia = null;
-                btnRecordEnroll.IsEnabled = true;
-                btnVerify.IsEnabled = true;
+                CleanAfter();
                 return;
             }
             if (response.Result == Result.Accept)
@@ -227,11 +222,15 @@ namespace RecognizeMeApp
                 txtInfo.Text = "Not verified" + Environment.NewLine + response.Phrase;
             }
 
+            CleanAfter();
+        }
+
+        void CleanAfter()
+        {
             CaptureMedia = null;
             btnRecordEnroll.IsEnabled = true;
             btnVerify.IsEnabled = true;
         }
-
 
         private async void btnGetProfiles_Click(object sender, RoutedEventArgs e)
         {
