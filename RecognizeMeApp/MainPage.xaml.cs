@@ -63,7 +63,7 @@ namespace RecognizeMeApp
 
             if (lbProfiles.SelectedIndex < 0)
             {
-                txtInfo.Text = "Get profiles select one of them";
+                txtInfo.Text = "Get profiles and select one of them";
                 return;
             }
 
@@ -317,7 +317,7 @@ namespace RecognizeMeApp
 
             if (lbProfiles.SelectedIndex < 0)
             {
-                txtInfo.Text = "Get and select profile at first";
+                txtInfo.Text = "Get profiles and select one of them";
                 return;
             }
 
